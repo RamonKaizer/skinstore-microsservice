@@ -1,0 +1,14 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: jdbc:mysql://pedido-db:3306/pedido?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+    username: pedido
+    password: pedido_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect

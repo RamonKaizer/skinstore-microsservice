@@ -1,0 +1,22 @@
+SET NAMES utf8mb4;
+SET time_zone = '+00:00';
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+CREATE DATABASE IF NOT EXISTS pagamento
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_0900_ai_ci;
+USE pagamento;
+
+DROP TABLE IF EXISTS pagamentos;
+
+CREATE TABLE pagamentos (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  pedido_id BIGINT NOT NULL,
+  metodo ENUM('PIX','CARTAO','BOLETO') NOT NULL,
+  status ENUM('PENDENTE','APROVADO','RECUSADO') NOT NULL DEFAULT 'PENDENTE',
+  valor DECIMAL(15,2) NOT NULL,
+  criado_em DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  processado_em DATETIME(6) NULL,
+  PRIMARY KEY (id),
+  KEY idx_pagamentos_pedido (pedido_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

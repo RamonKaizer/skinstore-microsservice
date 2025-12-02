@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+svc:
+  usuario: http://usuario-app:8081
+  produto: http://produto-app:8082
+  carrinho: http://carrinho-app:8083
+  pedido: http://pedido-app:8084
+  pagamento: http://pagamento-app:8085

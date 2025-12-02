@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+svc:
+  usuario: http://localhost:8081
+  produto: http://localhost:8082
+  carrinho: http://localhost:8083
+  pedido: http://localhost:8084
+  pagamento: http://localhost:8085

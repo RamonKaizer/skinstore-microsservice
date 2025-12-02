@@ -1,0 +1,243 @@
+services:
+  # ===== DB USUÁRIO =====
+  usuario-db:
+    image: mysql:8.0
+    container_name: usuario-db
+    restart: no
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: usuario            # opcional se o 01_init.sql já cria
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: usuario_password
+      TZ: America/Sao_Paulo
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+      --explicit_defaults_for_timestamp=ON
+    ports:
+      - "3307:3306"
+    volumes:
+      - usuario_data:/var/lib/mysql
+      - ./usuario/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== APP USUÁRIO (8081) =====
+  usuario-app:
+    build:
+      context: ./usuario
+      dockerfile: Dockerfile
+    container_name: usuario-app
+    restart: no
+    depends_on:
+      usuario-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker   # app deve ter application-docker.yml apontando p/ usuario-db
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== DB PRODUTO =====
+  produto-db:
+    image: mysql:8.0
+    container_name: produto-db
+    restart: no
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: produto         # opcional se o 01_init.sql já cria
+      MYSQL_USER: produto
+      MYSQL_PASSWORD: produto_password
+      TZ: America/Sao_Paulo
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+      --explicit_defaults_for_timestamp=ON
+    ports:
+      - "3308:3306"
+    volumes:
+      - produto_data:/var/lib/mysql
+      - ./produtos/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== APP PRODUTO (8082) =====
+  produto-app:
+    build:
+      context: ./produtos
+      dockerfile: Dockerfile
+    container_name: produto-app
+    restart: no
+    depends_on:
+      produto-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker   # app deve ter application-docker.yml apontando p/ produto-db
+    ports:
+      - "8082:8082"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== DB CARRINHO =====
+  carrinho-db:
+    image: mysql:8.0
+    container_name: carrinho-db
+    restart: no
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: carrinho
+      MYSQL_USER: carrinho
+      MYSQL_PASSWORD: carrinho_password
+      TZ: America/Sao_Paulo
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+      --explicit_defaults_for_timestamp=ON
+    ports:
+      - "3310:3306"
+    volumes:
+      - carrinho_data:/var/lib/mysql
+      - ./carrinho/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== APP PEDIDO (8083) =====
+  carrinho-app:
+    build:
+      context: ./carrinho
+      dockerfile: Dockerfile
+    container_name: carrinho-app
+    restart: no
+    depends_on:
+      carrinho-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8083:8083"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== DB PEDIDO =====
+  pedido-db:
+    image: mysql:8.0
+    container_name: pedido-db
+    restart: no
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pedido
+      MYSQL_USER: pedido
+      MYSQL_PASSWORD: pedido_password
+      TZ: America/Sao_Paulo
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+      --explicit_defaults_for_timestamp=ON
+    ports:
+      - "3311:3306"
+    volumes:
+      - pedido_data:/var/lib/mysql
+      - ./pedido/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== APP PEDIDO (8084) =====
+  pedido-app:
+    build:
+      context: ./pedido
+      dockerfile: Dockerfile
+    container_name: pedido-app
+    restart: no
+    depends_on:
+      pedido-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8084:8084"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== DB PAGAMENTO =====
+  pagamento-db:
+    image: mysql:8.0
+    container_name: pagamento-db
+    restart: no
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: pagamento
+      MYSQL_USER: pagamento
+      MYSQL_PASSWORD: pagamento_password
+      TZ: America/Sao_Paulo
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+      --explicit_defaults_for_timestamp=ON
+    ports:
+      - "3312:3306"
+    volumes:
+      - pagamento_data:/var/lib/mysql
+      - ./pagamento/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ===== APP PAGAMENTO (8085) =====
+  pagamento-app:
+    build:
+      context: ./pagamento
+      dockerfile: Dockerfile
+    container_name: pagamento-app
+    restart: no
+    depends_on:
+      pagamento-db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8085:8085"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  usuario_data:
+  produto_data:
+  carrinho_data:
+  pedido_data:
+  pagamento_data:
+
